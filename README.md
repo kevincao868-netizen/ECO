@@ -1,44 +1,71 @@
-```markdown
-# ECO - 外汇 / USDT ↔ NGN 平台（仓库初始化）
+# ECO - 尼日利亚换汇系统（USDT ↔ NGN）
 
-此仓库为外汇换汇项目的初始化骨架（MVP 起点）。包含：
-- 最小后端（Node + Express + TypeScript）
+这是一个面向尼日利亚换汇场景的最小可运行骨架（MVP），包含：
+- Node.js + Express + TypeScript 后端 API
 - Prisma 数据模型（Postgres）
-- docker-compose：Postgres（演示用）与 Redis（可选）
-- 基本 README、.gitignore、LICENSE
+- docker-compose（Postgres + Redis）
+- 示例环境变量与基础接口
 
-快速开始（本地开发）
-1. 克隆或在本地初始化项目目录，然后将以下文件放入仓库根目录（或根据路径组织）。
-2. 启动数据库（需要 Docker）：
-   docker-compose up -d
+## 功能概览
+- 兑汇行情接口（手动/默认汇率）
+- 创建订单（内存示例）
+- 订单列表（内存示例）
 
-3. 进入后端并安装依赖：
-   cd backend
-   npm install
+> 提示：数据库与资金流程逻辑尚未接入，仅为开发起点。你可以逐步替换为真实的 KYC、钱包监听、对账流程等。
 
-4. 本地开发启动（TypeScript + ts-node-dev）：
-   npm run dev
+## 快速开始
 
-5. 在浏览器打开 http://localhost:3000 应看到欢迎信息。
-
-把本地代码推送到 GitHub（已创建空仓库 https://github.com/kevincao868-netizen/ECO）：
-# 在项目根目录执行
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-# 使用 SSH:
-git remote add origin git@github.com:kevincao868-netizen/ECO.git
-git push -u origin main
-
-或者使用 HTTPS:
-git remote add origin https://github.com/kevincao868-netizen/ECO.git
-git push -u origin main
-
-安全提醒（请务必执行）
-- 在提交前检查是否包含敏感文件（.env、私钥等）；如果有请先移除并加入 .gitignore。
-- 若误提交敏感信息，使用 BFG 或 git filter-repo 清理历史并立刻旋转密钥。
-
-后续建议
-- 我可以基于这个骨架继续添加：KYC stub、TRC20 钱包监听 stub、自动对账 worker、管理端页面等。告诉我你希望我先补哪一部分，我会把对应代码生成给你。
+### 1. 启动数据库
+需要 Docker：
+```bash
+docker-compose up -d
 ```
+
+### 2. 安装依赖
+```bash
+cd backend
+npm install
+```
+
+### 3. 配置环境变量
+```bash
+cp .env.example .env
+```
+
+### 4. 启动开发服务器
+```bash
+npm run dev
+```
+
+访问 http://localhost:3000/health 应看到健康检查信息。
+
+## API 示例
+
+### 获取汇率
+`GET /rates`
+
+### 创建订单
+`POST /orders`
+```json
+{
+  "side": "BUY_USDT",
+  "amountUsdt": 100,
+  "rateNgn": 1200
+}
+```
+
+### 订单列表
+`GET /orders`
+
+## 数据模型（Prisma）
+见 `backend/prisma/schema.prisma`。
+
+## 后续可扩展方向
+- KYC 审核与风控策略
+- 钱包/银行入金监听（USDT/NGN）
+- 自动对账与异步任务队列
+- 管理后台与审计日志
+
+## 安全提醒
+- 提交前检查是否包含敏感文件（.env、私钥等）。
+- 若误提交敏感信息，请立即清理 Git 历史并旋转密钥。
