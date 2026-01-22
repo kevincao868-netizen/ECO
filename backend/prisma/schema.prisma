@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  CREATED
+  PENDING_PAYMENT
+  FUNDS_RECEIVED
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderSide {
+  BUY_USDT
+  SELL_USDT
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  fullName    String
+  phoneNumber String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  wallets     Wallet[]
+  orders      ExchangeOrder[]
+}
+
+model Wallet {
+  id         String   @id @default(cuid())
+  userId     String
+  type       String
+  address    String?
+  bankName   String?
+  accountNo  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model ExchangeOrder {
+  id            String      @id @default(cuid())
+  userId        String
+  side          OrderSide
+  amountUsdt    Decimal     @db.Decimal(18, 2)
+  rateNgn       Decimal     @db.Decimal(18, 2)
+  amountNgn     Decimal     @db.Decimal(18, 2)
+  status        OrderStatus @default(CREATED)
+  reference     String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+}
